@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# numpy data
+*.npz
+
+# pickle files
+*.pickle
+
 # Distribution / packaging
 .Python
 build/
@@ -136,3 +142,4 @@ results/
 *wget-log*
 
 .vscode
+vcc_2018_preprocessed/vcc2018_training/dysarthria/dysarthria_norm_stat.npz
