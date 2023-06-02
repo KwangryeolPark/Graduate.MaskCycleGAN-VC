@@ -29,6 +29,12 @@ Paper: https://arxiv.org/pdf/2102.12841.pdf
 Repository Contributors: [Claire Pajot](https://github.com/cmpajot), [Hikaru Hotta](https://github.com/HikaruHotta), [Sofian Zalouk](https://github.com/szalouk)
 
 
+# Dependency
+Test Python version: 3.8.16
+```bash
+pip install -r requirements.txt
+```
+
 ## Setup
 
 Clone the repository.
