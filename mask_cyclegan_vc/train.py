@@ -17,6 +17,7 @@ from dataset.vc_dataset import VCDataset
 from mask_cyclegan_vc.utils import decode_melspectrogram, get_mel_spectrogram_fig
 from logger.train_logger import TrainLogger
 from saver.model_saver import ModelSaver
+import wandb
 
 
 class MaskCycleGANVCTraining(object):
@@ -96,7 +97,7 @@ class MaskCycleGANVCTraining(object):
                                                                  drop_last=False)
 
         # Initialize logger and saver objects
-        self.logger = TrainLogger(args, len(self.train_dataloader.dataset))
+        self.logger = TrainLogger(args, len(self.train_dataloader.dataset), verbose=False)
         self.saver = ModelSaver(args)
 
         # Initialize Generators and Discriminators
@@ -175,10 +176,12 @@ class MaskCycleGANVCTraining(object):
     def train(self):
         """Implements the training loop for MaskCycleGAN-VC
         """
-        for epoch in range(self.start_epoch, self.num_epochs + 1):
+        outer = tqdm(range(self.start_epoch, self.num_epochs + 1), desc='Epoch', position=0)
+        for epoch in outer:
+            outer.set_postfix({'epoch': epoch})
             self.logger.start_epoch()
-
-            for i, (real_A, mask_A, real_B, mask_B) in enumerate(tqdm(self.train_dataloader)):
+            inner = tqdm(self.train_dataloader, desc='Iteration', position=1, leave=False)
+            for i, (real_A, mask_A, real_B, mask_B) in enumerate(inner):
                 self.logger.start_iter()
                 num_iterations = (
                     self.n_samples // self.mini_batch_size) * epoch + i
@@ -297,6 +300,8 @@ class MaskCycleGANVCTraining(object):
                     self.reset_grad()
                     d_loss.backward()
                     self.discriminator_optimizer.step()
+                    inner.set_postfix({'g_loss': g_loss.item(), 'd_loss': d_loss.item()})
+                    wandb.log({'g_loss': g_loss.item(), 'd_loss': d_loss.item()})
 
                 # Log Iteration
                 self.logger.log_iter(
@@ -378,5 +383,9 @@ class MaskCycleGANVCTraining(object):
 if __name__ == "__main__":
     parser = CycleGANTrainArgParser()
     args = parser.parse_args()
+    wandb.init(
+        name=args.name,
+        project=args.name,
+    )
     cycleGAN = MaskCycleGANVCTraining(args)
     cycleGAN.train()

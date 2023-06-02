@@ -93,7 +93,7 @@ class TrainLogger(BaseLogger):
         is_finished_training(): Return True if finished training, otherwise return False.
     """
 
-    def __init__(self, args, dataset_len):
+    def __init__(self, args, dataset_len, verbose=True):
         super(TrainLogger, self).__init__(args, dataset_len)
         """
         Args:
@@ -104,6 +104,7 @@ class TrainLogger(BaseLogger):
         self.epoch_start_time = None
         self.steps_per_print = args.steps_per_print
         self.num_epochs = args.num_epochs
+        self.verbose = verbose
 
     def log_hparams(self, args):
         """
@@ -131,7 +132,7 @@ class TrainLogger(BaseLogger):
             meter.update(loss_dict[loss_name], self.batch_size)
 
         # Periodically write to the log and TensorBoard
-        if self.iter % self.steps_per_print == 0:
+        if self.iter % self.steps_per_print == 0 and self.verbose:
             # Write a header for the log entry
             avg_time = (time() - self.iter_start_time) / self.batch_size
             message = '(epoch: %d, iter: %d, time: %.3f) ' % (
@@ -176,7 +177,8 @@ class TrainLogger(BaseLogger):
         """Log info for start of an epoch."""
         self.epoch_start_time = time()
         self.iter = 0
-        self.write('[start of epoch {}]'.format(self.epoch))
+        if self.verbose:
+            self.write('[start of epoch {}]'.format(self.epoch))
 
     def end_epoch(self, metrics=None):
         """
@@ -184,8 +186,9 @@ class TrainLogger(BaseLogger):
         Args:
             metrics (dict): str to scalar dictionary of metric values.
         """
-        self.write('[end of epoch {}/{}, epoch time: {:.2g}]'.format(
-            self.epoch, self.num_epochs, time() - self.epoch_start_time))
+        if self.verbose:
+            self.write('[end of epoch {}/{}, epoch time: {:.2g}]'.format(
+                self.epoch, self.num_epochs, time() - self.epoch_start_time))
         if metrics:
             self._log_scalars(metrics)
         self.epoch += 1

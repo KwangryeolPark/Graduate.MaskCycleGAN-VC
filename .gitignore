@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+wandb/*
 
 # C extensions
 *.so
@@ -143,3 +144,4 @@ results/
 
 .vscode
 vcc_2018_preprocessed/vcc2018_training/dysarthria/dysarthria_norm_stat.npz
+wandb/latest-run

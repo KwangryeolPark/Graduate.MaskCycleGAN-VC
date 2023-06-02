@@ -27,7 +27,7 @@ export SOURCE_SPEAKER=dysarthria_resampled
 export TARGET_SPEAKER=PKR_RESAMPLED
 
 python -m mask_cyclegan_vc.train \
-    --name dysarthria2pkr \
+    --name dysarthria2pkrtest \
     --seed 0 \
     --save_dir results/ \
     --preprocessed_data_dir $PREPROCESSED_DATA_DIRECTORY \
